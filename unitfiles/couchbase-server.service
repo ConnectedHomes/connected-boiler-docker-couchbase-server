@@ -1,0 +1,15 @@
+[Unit]
+Description=Couchbase Server
+After=docker.service
+Requires=docker.service
+
+[Service]
+EnvironmentFile=/etc/environment
+ExecStartPre=/bin/bash -c "/usr/bin/docker rm -f couchbase-server; /usr/bin/docker pull registry.bgchtest.info:5000/couchbase-server"
+ExecStart=/bin/bash -c 'set -x; if ! etcdctl mk /couchbase/leader $COREOS_PRIVATE_IPV4 > /dev/null 2>&1 ; then ENV_VARS="EXISTING_CLUSTER_NODE_ADDR=`etcdctl get /couchbase/leader`"; fi; docker run -i -t -d ` if [ -n "$ENV_VARS" ] ; then echo "-e $ENV_VARS"; fi ` -p 11210:11210 -p 8091:8091 -p 8092:8092 --name=couchbase-server registry.bgchtest.info:5000/couchbase-server'
+ExecStop=/usr/bin/docker rm -f couchbase-server
+TimeoutStartSec=30m
+
+[X-Fleet]
+X-Conflicts=couchbase-server.service
+#X-ConditionMachineMetadata=boxtype=db
