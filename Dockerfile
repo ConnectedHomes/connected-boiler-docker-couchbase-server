@@ -3,15 +3,25 @@
 # Install Couchbase Server Community Edition (version as per CB_VERSION below)
 #
 # VERSION 0.9.4
+#
+# Forked for BGCH CB by Luke Bond <luke@yld.io>
 
 FROM ubuntu
 MAINTAINER Brian Shumate, brian@couchbase.com
 
-ENV CB_VERSION 2.2.0
-ENV CB_BASE_URL http://packages.couchbase.com/releases
-ENV CB_PACKAGE couchbase-server-community_${CB_VERSION}_x86_64.deb
-ENV CB_DOWNLOAD_URL ${CB_BASE_URL}/${CB_VERSION}/${CB_PACKAGE}
+ENV CB_VERSION 2.5.1
+ENV CB_BASE_URL https://s3-eu-west-1.amazonaws.com/connectedboiler-couchbase
+ENV CB_EDITION enterprise
+ENV CB_PACKAGE couchbase-server-${CB_EDITION}_${CB_VERSION}_x86_64.deb
+ENV CB_DOWNLOAD_URL ${CB_BASE_URL}/${CB_PACKAGE}
 ENV CB_LOCAL_PATH /tmp/${CB_PACKAGE}
+
+ENV CB_INIT_DATA_PATH /opt/couchbase/var/lib/couchbase/data
+ENV CB_INIT_INDEX_PATH /opt/couchbase/var/lib/couchbase/data
+ENV CB_INIT_USERNAME Administrator
+ENV CB_INIT_PASSWORD password
+ENV CB_INIT_BUCKET_NAME bgch-cb-api
+ENV CB_INIT_BUCKET_ENABLEFLUSH 0
 
 # Limits
 RUN sed -i.bak '/\# End of file/ i\\# Following 4 lines added by docker-couchbase-server' /etc/security/limits.conf
@@ -45,6 +55,16 @@ RUN rm -r /opt/couchbase/var/lib
 ADD bin/couchbase-script /usr/local/sbin/couchbase
 RUN chmod 755 /usr/local/sbin/couchbase
 CMD /usr/local/sbin/couchbase
+
+# RUN /opt/couchbase/bin/couchbase-cli cluster-init -c `ip -4 -o addr show eth0 | grep -oE "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"`:8091 \
+#   --cluster-init-username=$CB_INIT_USERNAME \
+#   --cluster-init-password=$CB_INIT_PASSWORD \
+#   --cluster-init-ramsize=$CB_INIT_RAMSIZE
+#
+# RUN /opt/couchbase/bin/couchbase-cli bucket-create -c `ip -4 -o addr show eth0 | grep -oE "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"`:8091 \
+#   --bucket=$CB_INIT_BUCKET_NAME \
+#   --bucket-ramsize=$CB_INIT_BUCKET_SIZE \
+#   --enable-flush=$CB_INIT_BUCKET_ENABLEFLUSH
 
 ##############################################################################
 # The following bits are for using Couchbase Server with supervisord instead
