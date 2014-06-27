@@ -1,0 +1,25 @@
+{
+  "name": "connected-boiler-docker-couchbase-server",
+  "version": "0.0.0",
+  "description": "This is a Dockerfile and some supporting bits for running [Couchbase Server](http://couchbase.com/) in a [Docker](http://www.docker.io) container.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ConnectedHomes/connected-boiler-docker-couchbase-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ConnectedHomes/connected-boiler-docker-couchbase-server/issues"
+  },
+  "homepage": "https://github.com/ConnectedHomes/connected-boiler-docker-couchbase-server",
+  "dependencies": {
+    "connected-boiler-shared": "*",
+    "gulp": "^3.8.5",
+    "gulp-shell": "^0.2.7",
+    "gulp-watch": "^0.6.8"
+  }
+}

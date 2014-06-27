@@ -59,4 +59,5 @@ else
 
   echo "Couchbase initialisation complete"
 fi
-exec /bin/bash
+
+/bin/bash
