@@ -1,8 +1,9 @@
 #!/bin/bash
 
-source ~/.andy_sync/_alias.docker.shared
 gulp docker:run
-IP=$(dlip)
+
+IP=$(docker inspect --format='{{.NetworkSettings.IPAddress}}' $(docker ps -l -q))
+
 COMMAND="curl --silent http://${IP}:8091/pools/default/buckets"
 echo "Running: ${COMMAND}"
 ${COMMAND}
