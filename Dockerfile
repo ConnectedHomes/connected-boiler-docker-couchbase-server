@@ -43,7 +43,7 @@ RUN apt-get -y update
 RUN apt-get -y install librtmp0 libssl0.9.8 lsb-release openssh-server
 
 # Download Couchbase Server package to /tmp & install
-ADD $CB_DOWNLOAD_URL $CB_LOCAL_PATH
+RUN wget $CB_DOWNLOAD_URL -O $CB_LOCAL_PATH
 RUN dpkg -i $CB_LOCAL_PATH
 
 # Open the OpenSSH server and Couchbase Server ports
