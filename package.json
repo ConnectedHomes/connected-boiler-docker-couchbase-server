@@ -20,6 +20,7 @@
     "connected-boiler-shared": "*",
     "gulp": "^3.8.5",
     "gulp-shell": "^0.2.7",
+    "gulp-util": "^2.2.19",
     "gulp-watch": "^0.6.8"
   }
 }

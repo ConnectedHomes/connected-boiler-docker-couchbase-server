@@ -60,4 +60,5 @@ else
   echo "Couchbase initialisation complete"
 fi
 
-/bin/bash
+# hack to artificially keep the container up
+while :; do sleep 1; done

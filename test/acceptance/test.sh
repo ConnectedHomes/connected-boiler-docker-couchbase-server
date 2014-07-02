@@ -4,7 +4,7 @@ gulp docker:run
 
 IP=$(docker inspect --format='{{.NetworkSettings.IPAddress}}' $(docker ps -l -q))
 
-COMMAND="curl --silent http://${IP}:8091/pools/default/buckets"
+COMMAND="curl --silent --connect-timeout=10 http://${IP}:8091/pools/default/buckets"
 echo "Running: ${COMMAND}"
 ${COMMAND}
 STATUS_CODE=$?
