@@ -49,7 +49,7 @@ else
         --cluster-init-password=$CB_INIT_PASSWORD \
         --cluster-init-ramsize=$CB_INIT_RAMSIZE
 
-    echo "Creating bucket"
+    echo "Creating bucket ${CB_INIT_BUCKET_NAME}"
     untilsuccessful /opt/couchbase/bin/couchbase-cli bucket-create -c 127.0.0.1:8091 \
         --user $CB_INIT_USERNAME \
         --password $CB_INIT_PASSWORD \
@@ -60,5 +60,7 @@ else
   echo "Couchbase initialisation complete"
 fi
 
+echo "Going into infinite loop"
+
 # hack to artificially keep the container up
-while :; do sleep 1; done
+while :; do echo "$(date): Sleeping 300s"; sleep 300; done

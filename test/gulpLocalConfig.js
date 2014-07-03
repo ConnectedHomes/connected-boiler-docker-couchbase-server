@@ -1,6 +1,6 @@
 exports.options = {
   docker: {
-    imageName: 'couchbase'
+    imageName: 'couchbase-server'
   },
   files:  [
     '.'
