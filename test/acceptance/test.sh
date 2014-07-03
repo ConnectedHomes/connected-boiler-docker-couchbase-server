@@ -7,6 +7,8 @@ set -o nounset
 gulp docker:run
 
 LAST_IMAGE=$(docker ps -l -q)
+trap "docker stop $LAST_IMAGE" EXIT SIGINT SIGTERM
+
 
 if [[ ${DOCKER_HOST:-} != '' ]]; then
  IP=$(echo ${DOCKER_HOST} | sed -e 's#.*//##g' -e 's#:.*##g')
@@ -34,9 +36,6 @@ if ! ${COMMAND}; then
     fi
     EXIT_CODE=1
 fi
-
-# stop last container
-docker stop $(docker ps -l -q)
 
 echo "docker ps | awk '{print \$1}' | \xargs docker stop"
 
