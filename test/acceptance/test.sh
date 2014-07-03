@@ -2,16 +2,24 @@
 
 gulp docker:run
 
-IP=$(docker inspect --format='{{.NetworkSettings.IPAddress}}' $(docker ps -l -q))
+LAST_IMAGE=$(docker ps -l -q)
 
-COMMAND="curl --silent --connect-timeout=10 http://${IP}:8091/pools/default/buckets"
+IP=$(docker inspect --format='{{.NetworkSettings.IPAddress}}' ${LAST_IMAGE})
+
+docker logs ${LAST_IMAGE}
+
+COMMAND="curl --silent --connect-timeout 10 http://${IP}:8091/pools/default/buckets"
 echo "Running: ${COMMAND}"
 ${COMMAND}
 STATUS_CODE=$?
 
 if [[ ${STATUS_CODE} -gt 0 ]]; then
-    echo "Retrying ${COMMAND}"
+    echo "curl failed. Sleeping before retry"
     sleep 10
+
+    docker logs ${LAST_IMAGE}
+    echo "Retrying ${COMMAND}"
+
     ${COMMAND}
     STATUS_CODE=$?
 fi
