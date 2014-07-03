@@ -7,7 +7,7 @@ set -o nounset
 gulp docker:run
 
 LAST_IMAGE=$(docker ps -l -q)
-trap "docker stop $LAST_IMAGE" EXIT SIGINT SIGTERM
+trap "docker stop $LAST_IMAGE || true" EXIT SIGINT SIGTERM
 
 
 if [[ ${DOCKER_HOST:-} != '' ]]; then
@@ -25,6 +25,7 @@ echo "Running: ${COMMAND}"
 
 EXIT_CODE=0
 if ! ${COMMAND}; then
+    EXIT_CODE=1
     echo "curl failed. Sleeping before retry"
     sleep 10
 
@@ -33,8 +34,9 @@ if ! ${COMMAND}; then
 
     if ! ${COMMAND}; then
       echo "Failed to curl couchbase"
+    else
+      EXIT_CODE=0
     fi
-    EXIT_CODE=1
 fi
 
 echo "docker ps | awk '{print \$1}' | \xargs docker stop"
