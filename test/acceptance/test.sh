@@ -16,11 +16,13 @@ else
  IP=$(docker inspect --format='{{.NetworkSettings.IPAddress}}' ${LAST_IMAGE})
 fi
 
+PORT=$(docker port $LAST_IMAGE 8091 | sed 's/.*://g')
+
 sleep 12
 
 docker logs ${LAST_IMAGE}
 
-COMMAND="curl --silent --connect-timeout 3 http://${IP}:8091/pools/default/buckets"
+COMMAND="curl --silent --connect-timeout 3 http://${IP}:${PORT}/pools/default/buckets"
 echo "Running: ${COMMAND}"
 
 EXIT_CODE=0

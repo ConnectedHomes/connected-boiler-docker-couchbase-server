@@ -12,7 +12,7 @@ untilsuccessful() {
 
 cd /opt/couchbase
 mkdir -p var/lib/couchbase var/lib/couchbase/config var/lib/couchbase/data \
-var/lib/couchbase/stats var/lib/couchbase/logs var/lib/moxi
+  var/lib/couchbase/stats var/lib/couchbase/logs var/lib/moxi
 chown -R couchbase:couchbase var
 /etc/init.d/couchbase-server start
 
@@ -57,10 +57,12 @@ else
         --bucket-ramsize=$CB_INIT_BUCKET_SIZE \
         --enable-flush=$CB_INIT_BUCKET_ENABLEFLUSH
 
-  echo "Couchbase initialisation complete"
+    echo "Couchbase initialisation complete"
 fi
 
 echo "Going into infinite loop"
 
 # hack to artificially keep the container up
-while :; do echo "$(date): Sleeping 300s"; sleep 300; done
+while :; do
+  wget localhost:8091
+  echo "$(date): Sleeping 300s"; sleep 300; done
