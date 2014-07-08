@@ -3,12 +3,10 @@
 set -o errexit
 set -o nounset
 
-
 gulp docker:run
 
 LAST_IMAGE=$(docker ps -l -q)
 trap "docker stop $LAST_IMAGE || true" EXIT SIGINT SIGTERM
-
 
 if [[ ${DOCKER_HOST:-} != '' ]]; then
  IP=$(echo ${DOCKER_HOST} | sed -e 's#.*//##g' -e 's#:.*##g')

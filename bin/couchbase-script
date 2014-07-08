@@ -63,6 +63,4 @@ fi
 echo "Going into infinite loop"
 
 # hack to artificially keep the container up
-while :; do
-  wget localhost:8091
-  echo "$(date): Sleeping 300s"; sleep 300; done
+while :; do echo "$(date): Sleeping 300s"; sleep 300; done
