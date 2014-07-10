@@ -16,7 +16,7 @@ fi
 
 PORT=$(docker port $LAST_IMAGE 8091 | sed 's/.*://g')
 
-sleep 12
+sleep 30
 
 docker logs ${LAST_IMAGE}
 
