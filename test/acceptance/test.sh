@@ -8,19 +8,21 @@ gulp docker:run
 LAST_IMAGE=$(docker ps -l -q)
 trap "docker stop $LAST_IMAGE || true" EXIT SIGINT SIGTERM
 
+echo "Last image: $LAST_IMAGE"
+
+HOST=$(docker port ${LAST_IMAGE} 8091)
+
 if [[ ${DOCKER_HOST:-} != '' ]]; then
  IP=$(echo ${DOCKER_HOST} | sed -e 's#.*//##g' -e 's#:.*##g')
-else
- IP=$(docker inspect --format='{{.NetworkSettings.IPAddress}}' ${LAST_IMAGE})
+ PORT=$(echo $PORT | sed 's/.*://g')
+ HOST=${IP}:${PORT}
 fi
 
-PORT=$(docker port $LAST_IMAGE 8091 | sed 's/.*://g')
-
-sleep 30
+sleep 15
 
 docker logs ${LAST_IMAGE}
 
-COMMAND="curl --silent --connect-timeout 3 http://${IP}:${PORT}/pools/default/buckets"
+COMMAND="curl --silent --connect-timeout 3 http://${HOST}/pools/default/buckets"
 echo "Running: ${COMMAND}"
 
 EXIT_CODE=0
