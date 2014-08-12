@@ -14,7 +14,7 @@ HOST=$(docker port ${LAST_IMAGE} 8091)
 
 if [[ ${DOCKER_HOST:-} != '' ]]; then
  IP=$(echo ${DOCKER_HOST} | sed -e 's#.*//##g' -e 's#:.*##g')
- PORT=$(echo $PORT | sed 's/.*://g')
+ PORT=$(echo $HOST | sed 's/.*://g')
  HOST=${IP}:${PORT}
 fi
 
