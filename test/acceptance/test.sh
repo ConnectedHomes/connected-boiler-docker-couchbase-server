@@ -3,10 +3,13 @@
 set -o errexit
 set -o nounset
 
+declare -r DIR=$(cd "$(dirname "$0")" && pwd)
+source "$DIR/../../node_modules/connected-boiler-shared/_test_helper.sh"
+
 gulp docker:run
 
 LAST_IMAGE=$(docker ps -l -q)
-trap "docker stop $LAST_IMAGE || true" EXIT SIGINT SIGTERM
+addTrap "docker stop $LAST_IMAGE || true" EXIT SIGINT SIGTERM
 
 echo "Last image: $LAST_IMAGE"
 
