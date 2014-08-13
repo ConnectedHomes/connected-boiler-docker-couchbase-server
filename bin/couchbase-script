@@ -69,4 +69,4 @@ fi
 echo "Going into infinite loop"
 
 # hack to artificially keep the container up
-while :; do echo "$(date): Sleeping 300s"; sleep 300; done
+while :; do mount; echo "$(date): Sleeping 300s"; sleep 300; done
