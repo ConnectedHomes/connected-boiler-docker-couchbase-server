@@ -50,8 +50,10 @@ RUN dpkg -i $CB_LOCAL_PATH
 EXPOSE 22 4369 8091 8092 11209 11210 11211
 
 # couchbase-script approach (thanks for the ideas Dustin!)
-VOLUME /home/couchbase-server:/opt/couchbase/var
-RUN rm -r /opt/couchbase/var/lib
+#VOLUME /home/couchbase-server:/opt/couchbase/var
+#RUN rm -r /opt/couchbase/var/lib
+RUN mkdir -p /opt/couchbase/var/lib
+
 ADD bin/couchbase-script /usr/local/sbin/couchbase
 RUN chmod 755 /usr/local/sbin/couchbase
 CMD /usr/local/sbin/couchbase

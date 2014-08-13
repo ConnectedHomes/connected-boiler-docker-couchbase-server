@@ -6,6 +6,7 @@ set -o nounset
 declare -r DIR=$(cd "$(dirname "$0")" && pwd)
 source "$DIR/../../node_modules/connected-boiler-shared/_test_helper.sh"
 
+export NODE_ENV=test
 gulp docker:run
 
 LAST_IMAGE=$(docker ps -l -q)
