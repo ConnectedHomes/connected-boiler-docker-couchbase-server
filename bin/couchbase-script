@@ -13,6 +13,11 @@ untilsuccessful() {
 cd /opt/couchbase
 mkdir -p var/lib/couchbase var/lib/couchbase/config var/lib/couchbase/data \
   var/lib/couchbase/stats var/lib/couchbase/logs var/lib/moxi
+
+if [[ ${NODE_ENV} = 'test' ]]; then
+  mount -t tmpfs -o size=200M tmpfs /opt/couchbase/var
+fi
+
 chown -R couchbase:couchbase var
 /etc/init.d/couchbase-server start
 
