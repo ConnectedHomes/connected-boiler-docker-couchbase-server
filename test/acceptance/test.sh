@@ -3,26 +3,30 @@
 set -o errexit
 set -o nounset
 
+export NODE_ENV=test
+declare -r DIR=$(cd "$(dirname "$0")" && pwd)
+source "$DIR/../../node_modules/connected-boiler-shared/_test_helper.sh"
+
 gulp docker:run
 
 LAST_IMAGE=$(docker ps -l -q)
-trap "docker stop $LAST_IMAGE || true" EXIT SIGINT SIGTERM
+addTrap "echo Trap CB stop; docker stop $LAST_IMAGE || true" EXIT SIGINT SIGTERM
 
 echo "Last image: $LAST_IMAGE"
-
-HOST=$(docker port ${LAST_IMAGE} 8091)
+docker port ${LAST_IMAGE} 8091
+API_HOST=$(docker port ${LAST_IMAGE} 8091)
 
 if [[ ${DOCKER_HOST:-} != '' ]]; then
  IP=$(echo ${DOCKER_HOST} | sed -e 's#.*//##g' -e 's#:.*##g')
- PORT=$(echo $PORT | sed 's/.*://g')
- HOST=${IP}:${PORT}
+ PORT=$(echo $API_HOST | sed 's/.*://g')
+ API_HOST=${IP}:${PORT}
 fi
 
 sleep 15
 
 docker logs ${LAST_IMAGE}
 
-COMMAND="curl --silent --connect-timeout 3 http://${HOST}/pools/default/buckets"
+COMMAND="curl --silent --connect-timeout 3 http://${API_HOST}/pools/default/buckets"
 echo "Running: ${COMMAND}"
 
 EXIT_CODE=0
