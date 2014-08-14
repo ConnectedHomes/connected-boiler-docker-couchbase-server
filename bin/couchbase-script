@@ -10,6 +10,7 @@ untilsuccessful() {
     done
 }
 
+echo "NODE_ENV: ${NODE_ENV}"
 if [[ ${NODE_ENV} = 'test' ]]; then
   COMMAND="sudo mount -t tmpfs -o size=200M tmpfs /opt/couchbase/var"
   echo about to $COMMAND
@@ -37,6 +38,7 @@ let RAM_QUOTA=$TOTAL_MEM*80/100
 CB_INIT_RAMSIZE=${CB_INIT_RAMSIZE-$RAM_QUOTA}
 CB_INIT_BUCKET_SIZE=${CB_INIT_BUCKET_SIZE-"$CB_INIT_RAMSIZE"}
 CB_INIT_BUCKET_ENABLEFLUSH=${CB_INIT_BUCKET_ENABLEFLUSH-"0"}
+CB_INIT_BUCKET_REPLICA_COUNT=${CB_INIT_BUCKET_REPLICA_COUNT-"0"}
 
 if [ -n "$EXISTING_CLUSTER_NODE_ADDR" ]
 then
@@ -63,7 +65,8 @@ else
         --password $CB_INIT_PASSWORD \
         --bucket=$CB_INIT_BUCKET_NAME \
         --bucket-ramsize=$CB_INIT_BUCKET_SIZE \
-        --enable-flush=$CB_INIT_BUCKET_ENABLEFLUSH
+        --enable-flush=$CB_INIT_BUCKET_ENABLEFLUSH \
+        --bucket-replica=${CB_INIT_BUCKET_REPLICA_COUNT}
 
     echo "Couchbase initialisation complete"
 fi
