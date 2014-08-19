@@ -10,7 +10,11 @@ source "$DIR/../../node_modules/connected-boiler-shared/_test_helper.sh"
 gulp docker:run
 
 LAST_IMAGE=$(docker ps -l -q)
-addTrap "echo Trap CB stop; docker stop $LAST_IMAGE || true" EXIT SIGINT SIGTERM
+stopMe() {
+  echo Trap CB stop;
+  docker stop $LAST_IMAGE || true
+}
+addTrap stopMe EXIT SIGINT SIGTERM
 
 echo "Last image: $LAST_IMAGE"
 docker port ${LAST_IMAGE} 8091
@@ -45,6 +49,5 @@ if ! ${COMMAND}; then
     fi
 fi
 
-echo "docker ps | awk '{print \$1}' | \xargs docker stop"
-
+stopMe
 exit ${EXIT_CODE}
