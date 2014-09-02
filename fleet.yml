@@ -1,0 +1,6 @@
+---
+default:
+  couchbase-server:
+    announce: 8091 
+    env_vars:
+      CB_INIT_RAM_SIZE: 512
