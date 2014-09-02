@@ -42,6 +42,5 @@ RUN dpkg -i $CB_LOCAL_PATH
 # Open the OpenSSH server and Couchbase Server ports
 EXPOSE 22 4369 8091 8092 11209 11210 11211
 
-ADD bin/couchbase-script /usr/local/sbin/couchbase
-RUN chmod 755 /usr/local/sbin/couchbase
-CMD ["/usr/local/sbin/couchbase"]
+ADD run.sh .
+CMD ["./run.sh"]

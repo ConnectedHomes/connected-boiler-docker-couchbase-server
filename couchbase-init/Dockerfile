@@ -48,5 +48,5 @@ RUN dpkg -i $CB_LOCAL_PATH
 
 VOLUME /opt/couchbase/var
 
-ADD couchbase-script .
-CMD ["/bin/bash", "couchbase-script"]
+ADD run.sh .
+CMD ["./run.sh"]
