@@ -16,6 +16,13 @@ ENV CB_PACKAGE couchbase-server-${CB_EDITION}_${CB_VERSION}_x86_64.deb
 ENV CB_DOWNLOAD_URL ${CB_BASE_URL}/${CB_PACKAGE}
 ENV CB_LOCAL_PATH /tmp/${CB_PACKAGE}
 
+ENV CB_INIT_DATA_PATH /opt/couchbase/var/lib/couchbase/data
+ENV CB_INIT_INDEX_PATH /opt/couchbase/var/lib/couchbase/data
+ENV CB_INIT_USERNAME Administrator
+ENV CB_INIT_PASSWORD password
+ENV CB_INIT_BUCKET_NAME bgch-cb-api
+ENV CB_INIT_BUCKET_ENABLEFLUSH 0
+
 # Limits
 RUN sed -i.bak '/\# End of file/ i\\# Following 4 lines added by docker-couchbase-server' /etc/security/limits.conf
 RUN sed -i.bak '/\# End of file/ i\\*                hard    memlock          unlimited' /etc/security/limits.conf
@@ -39,9 +46,7 @@ RUN apt-get -y install librtmp0 libssl0.9.8 lsb-release openssh-server
 RUN wget $CB_DOWNLOAD_URL -O $CB_LOCAL_PATH
 RUN dpkg -i $CB_LOCAL_PATH
 
-# Open the OpenSSH server and Couchbase Server ports
-EXPOSE 22 4369 8091 8092 11209 11210 11211
+VOLUME /opt/couchbase/var
 
-ADD bin/couchbase-script /usr/local/sbin/couchbase
-RUN chmod 755 /usr/local/sbin/couchbase
-CMD ["/usr/local/sbin/couchbase"]
+ADD couchbase-script .
+CMD ["/bin/bash", "couchbase-script"]
