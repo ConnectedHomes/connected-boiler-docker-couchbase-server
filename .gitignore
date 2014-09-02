@@ -1,2 +1,4 @@
 *.swp
 testPids
+node_modules
+fleet/
