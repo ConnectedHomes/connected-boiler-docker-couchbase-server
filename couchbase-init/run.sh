@@ -24,6 +24,7 @@ CB_INIT_BUCKET_REPLICA_COUNT=${CB_INIT_BUCKET_REPLICA_COUNT-"0"}
 CB_SERVER_HOST=${CB_SERVER_HOST-"$COUCHBASE_PORT_8091_TCP_ADDR"}
 CB_SERVER_PORT=${CB_SERVER_PORT-"$COUCHBASE_PORT_8091_TCP_PORT"}
 CB_SERVER_ENDPOINT=${CB_SERVER_HOST}:${CB_SERVER_PORT}
+ONESHOT=false
 
 # if we have a bucket then everything's initialised already (flawed but it'll do for now)
 untilsuccessful /opt/couchbase/bin/couchbase-cli bucket-list -c $CB_SERVER_ENDPOINT \
@@ -57,4 +58,6 @@ else
 fi
 
 # hack to artificially keep the container up
-while :; do sleep 1; done
+if [[ "$ONESHOT" != true ]]; then
+  while :; do sleep 1; done
+fi
