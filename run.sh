@@ -5,6 +5,13 @@ cleanup() {
   exit 0
 }
 
+echo "NODE_ENV: ${NODE_ENV}"
+if [[ ${NODE_ENV} = 'test' ]]; then
+  COMMAND="sudo mount -t tmpfs -o size=200M tmpfs /opt/couchbase/var"
+  echo about to $COMMAND
+  sudo mount -t tmpfs -o size=200M tmpfs /opt/couchbase/var
+fi
+
 /etc/init.d/couchbase-server start
 
 trap cleanup SIGTERM SIGINT

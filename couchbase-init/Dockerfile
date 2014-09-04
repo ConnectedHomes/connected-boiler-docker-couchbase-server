@@ -23,30 +23,18 @@ ENV CB_INIT_PASSWORD password
 ENV CB_INIT_BUCKET_NAME bgch-cb-api
 ENV CB_INIT_BUCKET_ENABLEFLUSH 0
 
-# Limits
-RUN sed -i.bak '/\# End of file/ i\\# Following 4 lines added by docker-couchbase-server' /etc/security/limits.conf
-RUN sed -i.bak '/\# End of file/ i\\*                hard    memlock          unlimited' /etc/security/limits.conf
-RUN sed -i.bak '/\# End of file/ i\\*                soft    memlock         unlimited\n' /etc/security/limits.conf
-RUN sed -i.bak '/\# End of file/ i\\*                hard    nofile          65536' /etc/security/limits.conf
-RUN sed -i.bak '/\# End of file/ i\\*                soft    nofile          65536\n' /etc/security/limits.conf
-RUN sed -i.bak '/\# end of pam-auth-update config/ i\\# Following line was added by docker-couchbase-server' /etc/pam.d/common-session
-RUN sed -i.bak '/\# end of pam-auth-update config/ i\session	required        pam_limits.so\n' /etc/pam.d/common-session
-
 # Locale and supporting utility commands
 RUN locale-gen en_US en_US.UTF-8
 RUN echo 'root:couchbase' | chpasswd
-RUN mkdir -p /var/run/sshd
 
 # Add Universe (for libssl0.9.8 dependency), update & install packages
 RUN sed -i.bak 's/main$/main universe/' /etc/apt/sources.list
 RUN apt-get -y update
-RUN apt-get -y install librtmp0 libssl0.9.8 lsb-release openssh-server
+RUN apt-get -y install librtmp0 libssl0.9.8 lsb-release wget python
 
 # Download Couchbase Server package to /tmp & install
 RUN wget $CB_DOWNLOAD_URL -O $CB_LOCAL_PATH
 RUN dpkg -i $CB_LOCAL_PATH
-
-VOLUME /opt/couchbase/var
 
 ADD run.sh .
 CMD ["./run.sh"]
