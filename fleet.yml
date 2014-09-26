@@ -3,6 +3,13 @@ default:
   couchbase: &couchbase
     image: couchbase-server-new
     announce: 8091 
+    expose:
+      - 4369:4369
+      - 8091:8091
+      - 8092:8092
+      - 11209:11209
+      - 11210:11210
+      - 11211:11211
 
   couchbase-init: &couchbase-init
     env_vars:
@@ -23,3 +30,21 @@ dev:
 
   couchbase-init:
     <<: *couchbase-init
+
+prod:
+  couchbase:
+    <<: *couchbase
+    ebs:
+      vol_id: vol-6ab6f76d
+      zone: eu-west-1c
+      mount: /opt/couchbase/var
+      device: /dev/xvdg
+
+  couchbase-init:
+    <<: *couchbase-init
+
+  couchbase-backup:
+    docker_links:
+      - couchbase
+    timer: "01:00:00"
+    oneshot: true
