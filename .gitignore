@@ -2,3 +2,4 @@
 testPids
 node_modules
 fleet/
+fig-test.yml

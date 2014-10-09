@@ -7,9 +7,16 @@ cleanup() {
 
 echo "NODE_ENV: ${NODE_ENV}"
 if [[ ${NODE_ENV} = 'test' ]]; then
+  mkdir -p /opt/couchbase/var/lib
   COMMAND="sudo mount -t tmpfs -o size=200M tmpfs /opt/couchbase/var"
   echo about to $COMMAND
   sudo mount -t tmpfs -o size=200M tmpfs /opt/couchbase/var
+  cd /opt/couchbase
+  mkdir -p var/lib/couchbase var/lib/couchbase/config var/lib/couchbase/data \
+    var/lib/couchbase/stats var/lib/couchbase/logs var/lib/moxi
+
+  chown -R couchbase:couchbase var
+  cd -
 fi
 
 /etc/init.d/couchbase-server start

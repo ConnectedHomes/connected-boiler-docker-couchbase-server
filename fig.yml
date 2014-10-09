@@ -1,0 +1,19 @@
+couchbase:
+  #image: harbour.bgchtest.info/couchbase-server:latest
+  build: .
+  ports:
+    - "8091:8091"
+    - "8092:8092"
+    - "11207:11207"
+    - "11210:11210"
+    - "11211:11211"
+    - "18091:18091"
+    - "18092:18092"
+  # this is required to mount a tmpfs volume
+  privileged: true
+  environment:
+    NODE_ENV: 'development'
+    CB_INIT_BUCKET_NAME: 'bgch-cb-api'
+    CB_INIT_BUCKET_ENABLEFLUSH: 1
+    CB_INIT_BUCKET_SIZE: 100
+    CB_INIT_RAM_SIZE: 200

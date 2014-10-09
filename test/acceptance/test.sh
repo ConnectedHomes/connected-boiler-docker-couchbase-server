@@ -3,34 +3,46 @@
 set -o errexit
 set -o nounset
 
-export NODE_ENV=test
+EXPECTED_SERVICES='\(couchbase\)'
+
 declare -r DIR=$(cd "$(dirname "$0")" && pwd)
 source "$DIR/../../node_modules/connected-boiler-shared/_test_helper.sh"
 
-gulp docker:run
+# generate config file from fig.yml
+#
+FIG_FILE=fig.yml
+FIG_TEST_FILE=fig-test.yml
+cp $FIG_FILE $FIG_TEST_FILE
 
-LAST_IMAGE=$(docker ps -l -q)
+CB_INIT_BUCKET_NAME=testing-testing-bucket
+
+setEnvironmentVar "CB_INIT_BUCKET_NAME" ${CB_INIT_BUCKET_NAME} ${FIG_TEST_FILE}
+setEnvironmentVar "NODE_ENV" "test" ${FIG_TEST_FILE}
+setEnvironmentVar "BGCH_CBAPI_DBNAME" ${CB_INIT_BUCKET_NAME} ${FIG_TEST_FILE}
+
 stopMe() {
   echo Trap CB stop;
-  docker stop $LAST_IMAGE || true
+  figStop
 }
 addTrap stopMe EXIT SIGINT SIGTERM
 
-echo "Last image: $LAST_IMAGE"
-docker port ${LAST_IMAGE} 8091
-API_HOST=$(docker port ${LAST_IMAGE} 8091)
+# invocation
+#
+[[ $(countRunningServices) = 1 && ${CB_ALLOW_EXISTING_FIG:-} = '1' ]] || {
+  figStop
+  figRm
+  figPull
+  #figPull $(getCouchbaseControlImageEndpoint)
 
-if [[ ${DOCKER_HOST:-} != '' ]]; then
- IP=$(echo ${DOCKER_HOST} | sed -e 's#.*//##g' -e 's#:.*##g')
- PORT=$(echo $API_HOST | sed 's/.*://g')
- API_HOST=${IP}:${PORT}
-fi
+  figBuild
 
-sleep 15
+  figUp &
+  trapFigStop
 
-docker logs ${LAST_IMAGE}
+  waitForRunningServicesCount 1
+}
 
-COMMAND="curl --silent --connect-timeout 3 http://${API_HOST}/pools/default/buckets"
+COMMAND="curl --silent --connect-timeout 3 http://$(getDockerIp):8091/pools/default/buckets"
 echo "Running: ${COMMAND}"
 
 EXIT_CODE=0
@@ -39,7 +51,6 @@ if ! ${COMMAND}; then
     echo "curl failed. Sleeping before retry"
     sleep 10
 
-    docker logs ${LAST_IMAGE}
     echo "Retrying ${COMMAND}"
 
     if ! ${COMMAND}; then
