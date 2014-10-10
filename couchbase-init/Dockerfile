@@ -9,10 +9,10 @@
 FROM ubuntu
 MAINTAINER Brian Shumate, brian@couchbase.com
 
-ENV CB_VERSION 2.5.1
-ENV CB_BASE_URL https://s3-eu-west-1.amazonaws.com/connectedboiler-couchbase
+ENV CB_VERSION 3.0.0
+ENV CB_BASE_URL http://packages.couchbase.com/releases/${CB_VERSION}
 ENV CB_EDITION enterprise
-ENV CB_PACKAGE couchbase-server-${CB_EDITION}_${CB_VERSION}_x86_64.deb
+ENV CB_PACKAGE couchbase-server-${CB_EDITION}_${CB_VERSION}-ubuntu12.04_amd64.deb
 ENV CB_DOWNLOAD_URL ${CB_BASE_URL}/${CB_PACKAGE}
 ENV CB_LOCAL_PATH /tmp/${CB_PACKAGE}
 

@@ -42,8 +42,27 @@ addTrap stopMe EXIT SIGINT SIGTERM
   waitForRunningServicesCount 1
 }
 
+waitForHttpResponse "$(getDockerIp):8091/index.html"
+
 COMMAND="curl --silent --connect-timeout 3 http://$(getDockerIp):8091/pools/default/buckets"
 echo "Running: ${COMMAND}"
+
+# couchbase control container
+#
+COUCHBASE_USER=Administrator
+COUCHBASE_PASS=password
+COUCHBASE_CONTROL_IMAGE="${PROJECT_NAME}_couchbaseinit_1"
+
+docker rm -f $COUCHBASE_CONTROL_IMAGE || true
+docker build -t "${COUCHBASE_CONTROL_IMAGE}" "$DIR/../../couchbase-init/"
+
+COMMAND1="docker run --link ${PROJECT_NAME}_couchbase_1:COUCHBASE_SERVER ${COUCHBASE_CONTROL_IMAGE}:latest \
+         /run.sh ${COUCHBASE_USER} ${COUCHBASE_PASS} ${CB_INIT_BUCKET_NAME}"
+
+echo About to run $COMMAND1
+$COMMAND1
+
+[[ $? -gt 0 ]] && exit 1
 
 EXIT_CODE=0
 if ! ${COMMAND}; then

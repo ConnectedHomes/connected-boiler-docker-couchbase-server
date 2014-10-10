@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 untilsuccessful() {
     "$@"
@@ -21,16 +21,21 @@ CB_INIT_RAMSIZE=${CB_INIT_RAMSIZE-$RAM_QUOTA}
 CB_INIT_BUCKET_SIZE=${CB_INIT_BUCKET_SIZE-"$CB_INIT_RAMSIZE"}
 CB_INIT_BUCKET_ENABLEFLUSH=${CB_INIT_BUCKET_ENABLEFLUSH-"0"}
 CB_INIT_BUCKET_REPLICA_COUNT=${CB_INIT_BUCKET_REPLICA_COUNT-"0"}
-CB_SERVER_HOST=${CB_SERVER_HOST-"$COUCHBASE_PORT_8091_TCP_ADDR"}
-CB_SERVER_PORT=${CB_SERVER_PORT-"$COUCHBASE_PORT_8091_TCP_PORT"}
+CB_SERVER_HOST=${CB_SERVER_HOST-"$COUCHBASE_SERVER_PORT_8091_TCP_ADDR"}
+CB_SERVER_PORT=${CB_SERVER_PORT-"$COUCHBASE_SERVER_PORT_8091_TCP_PORT"}
 CB_SERVER_ENDPOINT=${CB_SERVER_HOST}:${CB_SERVER_PORT}
 ONESHOT=${false-"$ONESHOT"}
 
 # if we have a bucket then everything's initialised already (flawed but it'll do for now)
+env
+echo "starting"
 untilsuccessful /opt/couchbase/bin/couchbase-cli bucket-list -c $CB_SERVER_ENDPOINT \
   -u $CB_INIT_USERNAME -p $CB_INIT_PASSWORD | grep $CB_INIT_BUCKET_NAME
 
 if [[ $? -ne 0 ]]; then
+
+  export CB_REST_USERNAME=$CB_INIT_USERNAME
+  export CB_REST_PASSWORD=$CB_INIT_PASSWORD
 
   echo "Initialising node"
   untilsuccessful /opt/couchbase/bin/couchbase-cli node-init -c $CB_SERVER_ENDPOINT \
@@ -39,9 +44,9 @@ if [[ $? -ne 0 ]]; then
 
   echo "Initialising cluster"
   untilsuccessful /opt/couchbase/bin/couchbase-cli cluster-init -c $CB_SERVER_ENDPOINT \
-      --cluster-init-username=$CB_INIT_USERNAME \
-      --cluster-init-password=$CB_INIT_PASSWORD \
-      --cluster-init-ramsize=$CB_INIT_RAMSIZE
+      --cluster-username=$CB_INIT_USERNAME \
+      --cluster-password=$CB_INIT_PASSWORD \
+      --cluster-ramsize=$CB_INIT_RAMSIZE
 
   echo "Creating bucket ${CB_INIT_BUCKET_NAME}"
   untilsuccessful /opt/couchbase/bin/couchbase-cli bucket-create -c $CB_SERVER_ENDPOINT \
@@ -55,9 +60,4 @@ if [[ $? -ne 0 ]]; then
   echo "Couchbase initialisation complete"
 else
   echo "Couchbase already initialised"
-fi
-
-# hack to artificially keep the container up
-if [[ "$ONESHOT" != true ]]; then
-  while :; do sleep 1; done
 fi
