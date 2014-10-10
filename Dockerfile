@@ -17,13 +17,13 @@ ENV CB_DOWNLOAD_URL ${CB_BASE_URL}/${CB_PACKAGE}
 ENV CB_LOCAL_PATH /tmp/${CB_PACKAGE}
 
 # Limits
-RUN sed -i.bak '/\# End of file/ i\\# Following 4 lines added by docker-couchbase-server' /etc/security/limits.conf
-RUN sed -i.bak '/\# End of file/ i\\*                hard    memlock          unlimited' /etc/security/limits.conf
-RUN sed -i.bak '/\# End of file/ i\\*                soft    memlock         unlimited\n' /etc/security/limits.conf
-RUN sed -i.bak '/\# End of file/ i\\*                hard    nofile          65536' /etc/security/limits.conf
-RUN sed -i.bak '/\# End of file/ i\\*                soft    nofile          65536\n' /etc/security/limits.conf
-RUN sed -i.bak '/\# end of pam-auth-update config/ i\\# Following line was added by docker-couchbase-server' /etc/pam.d/common-session
-RUN sed -i.bak '/\# end of pam-auth-update config/ i\session	required        pam_limits.so\n' /etc/pam.d/common-session
+RUN sed -i.bak '/\# End of file/ i\\# Following 4 lines added by docker-couchbase-server' /etc/security/limits.conf;\
+    sed -i.bak '/\# End of file/ i\\*                hard    memlock          unlimited' /etc/security/limits.conf ;\
+    sed -i.bak '/\# End of file/ i\\*                soft    memlock         unlimited\n' /etc/security/limits.conf;\
+    sed -i.bak '/\# End of file/ i\\*                hard    nofile          65536' /etc/security/limits.conf      ;\
+    sed -i.bak '/\# End of file/ i\\*                soft    nofile          65536\n' /etc/security/limits.conf    ;\
+    sed -i.bak '/\# end of pam-auth-update config/ i\\# Following line was added by docker-couchbase-server' /etc/pam.d/common-session;\
+    sed -i.bak '/\# end of pam-auth-update config/ i\session  required        pam_limits.so\n' /etc/pam.d/common-session;
 
 # Locale and supporting utility commands
 RUN locale-gen en_US en_US.UTF-8
