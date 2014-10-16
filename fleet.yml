@@ -39,6 +39,13 @@ prod:
       zone: eu-west-1c
       mount: /opt/couchbase/var
       device: /dev/xvdg
+      conflicts:
+        - bosch*
+        - redis*
+        - nhs*
+        - d2*
+        - cc*
+        - api*
 
   couchbase-init:
     <<: *couchbase-init
