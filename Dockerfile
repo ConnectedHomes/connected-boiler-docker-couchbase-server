@@ -38,8 +38,8 @@ RUN apt-get -y update && apt-get -y install librtmp0 libssl0.9.8 lsb-release ope
 RUN wget $CB_DOWNLOAD_URL -O $CB_LOCAL_PATH
 RUN dpkg -i $CB_LOCAL_PATH
 
-# Open the OpenSSH server and Couchbase Server ports
-EXPOSE 22 4369 8091 8092 11209 11210 11211
+# Open Couchbase Server ports
+EXPOSE 4369 8091 8092 11209 11210 11211
 
 ADD run.sh .
 CMD ["./run.sh"]
