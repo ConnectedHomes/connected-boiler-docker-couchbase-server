@@ -58,3 +58,8 @@ prod:
       - couchbase
     timer: "01:00:00"
     oneshot: true
+    ebs:
+      vol_id: vol-3f104338
+      zone: eu-west-1c
+      mount: /backups
+      device: /dev/xvdm
