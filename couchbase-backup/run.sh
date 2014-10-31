@@ -2,7 +2,7 @@
 
 set -e
 
-rm -rf /backups /backups-dd
+rm -rf /backups/* /backups-dd
 
 timestamp=$(date +"%Y%m%d.%H%M.%S")
 host=http://${COUCHBASE_PORT_8091_TCP_ADDR}:8091
