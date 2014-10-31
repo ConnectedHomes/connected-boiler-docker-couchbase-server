@@ -12,6 +12,9 @@ if [[ ${NODE_ENV} = 'test' ]]; then
   sudo mount -t tmpfs -o size=200M tmpfs /opt/couchbase/var
 fi
 
+mkdir -p /opt/couchbase/var/lib/couchbase/logs
+chown -R couchbase:couchbase /opt/couchbase
+
 /etc/init.d/couchbase-server start
 
 trap cleanup SIGTERM SIGINT
