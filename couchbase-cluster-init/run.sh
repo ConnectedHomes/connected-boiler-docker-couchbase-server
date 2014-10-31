@@ -41,10 +41,10 @@ assignEC2Hostname() {
       -d hostname=${EC2_HOSTNAME} -XPOST"
     echo running "$CMD"
     eval $CMD
+    # and address the node using the ec2 hostname from now on
+    CB_SERVER_HOST=${EC2_HOSTNAME}
+    CB_SERVER_ENDPOINT=${CB_SERVER_HOST}:${CB_SERVER_PORT}
   fi
-  # and address the node using the ec2 hostname from now on
-  CB_SERVER_HOST=${EC2_HOSTNAME}
-  CB_SERVER_ENDPOINT=${CB_SERVER_HOST}:${CB_SERVER_PORT}
 
   chkCluster
 }
