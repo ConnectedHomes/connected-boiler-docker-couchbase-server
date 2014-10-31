@@ -19,6 +19,14 @@ chown -R couchbase:couchbase /opt/couchbase
 
 trap cleanup SIGTERM SIGINT
 
+if [[ "${SET_EC2_HOSTNAME}" ]]; then 
+  # in ec2, we assign couchbase node the ec2 public hostname
+  # however, it will error because it cannot bind to the resolved IP
+  # address. Setting it to 127.0.0.1 will workaround this.
+  EC2_HOSTNAME=$(curl -sS http://169.254.169.254/latest/meta-data/public-hostname) 
+  echo "127.0.0.1 ${EC2_HOSTNAME}" >> /etc/hosts 
+fi
+
 tail -F /opt/couchbase/var/lib/couchbase/logs/couchdb.1 &
 
 # hack to artificially keep the container up
