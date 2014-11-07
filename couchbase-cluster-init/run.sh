@@ -5,22 +5,22 @@ set -o nounset
 # error on clobber
 set -o noclobber
 
-CB_INIT_BUCKET_NAME=${CB_INIT_BUCKET_NAME-"bgch-cb-api"}
-CB_INIT_DATA_PATH=${CB_INIT_DATA_PATH-"/opt/couchbase/var/lib/couchbase/data"}
-CB_INIT_INDEX_PATH=${CB_INIT_INDEX_PATH-"/opt/couchbase/var/lib/couchbase/data"}
-CB_INIT_USERNAME=${CB_INIT_USERNAME-"Administrator"}
-CB_INIT_PASSWORD=${CB_INIT_PASSWORD-"password"}
+CB_INIT_BUCKET_NAME=${CB_INIT_BUCKET_NAME:-"bgch-cb-api"}
+CB_INIT_DATA_PATH=${CB_INIT_DATA_PATH:-"/opt/couchbase/var/lib/couchbase/data"}
+CB_INIT_INDEX_PATH=${CB_INIT_INDEX_PATH:-"/opt/couchbase/var/lib/couchbase/data"}
+CB_INIT_USERNAME=${CB_INIT_USERNAME:-"Administrator"}
+CB_INIT_PASSWORD=${CB_INIT_PASSWORD:-"password"}
 TOTAL_MEM=$(free -m | grep Mem | awk '{ print $2 }')
-let RAM_QUOTA=$TOTAL_MEM*80/100
-CB_INIT_RAMSIZE=${CB_INIT_RAMSIZE-$RAM_QUOTA}
-CB_INIT_BUCKET_SIZE=${CB_INIT_BUCKET_SIZE-"$CB_INIT_RAMSIZE"}
-CB_INIT_BUCKET_ENABLEFLUSH=${CB_INIT_BUCKET_ENABLEFLUSH-"0"}
-CB_INIT_BUCKET_REPLICA_COUNT=${CB_INIT_BUCKET_REPLICA_COUNT-"0"}
+let RAM_QUOTA=$((TOTAL_MEM*80/100))
+CB_INIT_RAMSIZE=${CB_INIT_RAMSIZE:-$RAM_QUOTA}
+CB_INIT_BUCKET_SIZE=${CB_INIT_BUCKET_SIZE:-"$CB_INIT_RAMSIZE"}
+CB_INIT_BUCKET_ENABLEFLUSH=${CB_INIT_BUCKET_ENABLEFLUSH:-"0"}
+CB_INIT_BUCKET_REPLICA_COUNT=${CB_INIT_BUCKET_REPLICA_COUNT:-"0"}
 GATEWAY=$(netstat -rn | grep '^0.0.0.0' | awk '{ print $2 }')
 export ETCDCTL_PEERS=${ETCDCTL_PEERS:-"$GATEWAY:4001"}
 echo "Setting etcd peers to $ETCDCTL_PEERS"
-CB_SERVER_HOST=${CB_SERVER_HOST-"$COUCHBASE_PORT_8091_TCP_ADDR"}
-CB_SERVER_PORT=${CB_SERVER_PORT-"$COUCHBASE_PORT_8091_TCP_PORT"}
+CB_SERVER_HOST=${CB_SERVER_HOST:-"$COUCHBASE_PORT_8091_TCP_ADDR"}
+CB_SERVER_PORT=${CB_SERVER_PORT:-"$COUCHBASE_PORT_8091_TCP_PORT"}
 CB_SERVER_ENDPOINT=${CB_SERVER_HOST}:${CB_SERVER_PORT}
 
 waitForNodeToStart() {
@@ -29,7 +29,7 @@ waitForNodeToStart() {
   `$CMD`
   [[ "$?" = 0 ]] && assignEC2Hostname
 
-  echo "Error: couldn't connect to node"
+  echo "Error: couldn't connect to node" >&2
   exit 1
 }
 
@@ -87,7 +87,7 @@ joinCluster() {
   RET_CODE=$?
   [[ $RET_CODE = 0 ]] && joinedCluster
 
-  echo "Bad exit code: $RET_CODE"
+  echo "Bad exit code: $RET_CODE" >&2
   exit $RET_CODE 
 }
 
@@ -101,7 +101,7 @@ createCluster() {
   HTTP_RESP_CODE=`$CMD`
   [[ "$HTTP_RESP_CODE" = 200 ]] && setMemoryQuota
 
-  echo "Bad response code: $HTTP_RESP_CODE"
+  echo "Bad response code: $HTTP_RESP_CODE" >&2
   exit 1
 }
 
@@ -114,7 +114,7 @@ setMemoryQuota() {
   HTTP_RESP_CODE=`$CMD`
   [[ "$HTTP_RESP_CODE" = 200 ]] && createBucket
 
-  echo "Bad response code: $HTTP_RESP_CODE"
+  echo "Bad response code: $HTTP_RESP_CODE" >&2
   exit 1
 }
 
@@ -133,7 +133,7 @@ createBucket() {
   [[ "$HTTP_RESP_CODE" = 202 ]] && createdBucket
   [[ "$HTTP_RESP_CODE" = 204 ]] && bucketAlreadyExists
 
-  echo "Bad response code: $HTTP_RESP_CODE"
+  echo "Bad response code: $HTTP_RESP_CODE" >&2
   exit 1
 }
 
