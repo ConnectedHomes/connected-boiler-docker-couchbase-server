@@ -2,12 +2,13 @@
 default:
   couchbase: &couchbase
     image: couchbase-server-new
+    ec2_public_hostname: true
     announce:
       couchbase: 8091
     env_vars:
       SET_EC2_HOSTNAME: true
-    global_unit: true
     role: db
+    stop_timeout: 60
     expose:
       - 4369:4369
       - 8091:8091
@@ -17,8 +18,6 @@ default:
       - 11211:11211
       - from: 21100
         to: 21199
-    volumes: 
-      - /couchbase:/opt/couchbase/var
 
   couchbase-cluster-init: &couchbase-cluster-init
     global_unit: true
@@ -27,6 +26,7 @@ default:
     restart_on_failure: true
     env_vars:
       CB_INIT_RAM_SIZE: 512
+      CB_INIT_BUCKET_REPLICA_COUNT: 1 
       ETCDCTL_PEERS: $ETCDCTL_PEERS
     docker_links:
       - couchbase
@@ -36,30 +36,51 @@ dev:
     <<: *couchbase
   couchbase-cluster-init:
     <<: *couchbase-cluster-init
+  couchbase-backup:
+      docker_links:
+        - couchbase
+      timer: "23:00:00"
+      oneshot: true
+      ebs:
+        vol_id: vol-5c356f5b
+        zone: eu-west-1c
+        mount: /backups
+        device: /dev/xvdm
 
 prod:
-  couchbase:
+  couchbase.1:
     <<: *couchbase
     ebs:
-      vol_id: vol-6ab6f76d
-      zone: eu-west-1c
+      vol_id: vol-209ac027 # eu-west-1c
       mount: /opt/couchbase/var
       device: /dev/xvdg
-      conflicts:
-        - bosch*
-        - redis*
-        - nhs*
-        - d2*
-        - cc*
-        - api*
-
-  couchbase-backup:
-    docker_links:
-      - couchbase
-    timer: "01:00:00"
-    oneshot: true
+      machine_id: e0cab294db194c2a8958900143410046
+  couchbase.2:
+    <<: *couchbase
     ebs:
-      vol_id: vol-3f104338
-      zone: eu-west-1c
-      mount: /backups
-      device: /dev/xvdm
+      vol_id: vol-8a98c28d # eu-west-1c
+      mount: /opt/couchbase/var
+      device: /dev/xvdg
+      machine_id: 6a5ebc4ba97343a687219b6d94b91ce0 
+  couchbase.3:
+    <<: *couchbase
+    ebs:
+      vol_id: vol-fcd6eef7 # eu-west-1a
+      mount: /opt/couchbase/var
+      device: /dev/xvdg
+      machine_id: 0c9d1fc6fd1d452eb5b32ac1b6427c8f
+  couchbase.4:
+    <<: *couchbase
+    machine_id: d8f16fa9692f4090bc3812e24ad389fa
+    volumes:
+      - /couchbase:/opt/couchbase/var
+  couchbase.5:
+    <<: *couchbase
+    machine_id: 19baa1ea2a444211b2cdbd650151c377
+    volumes:
+      - /couchbase:/opt/couchbase/var
+  couchbase.6:
+    <<: *couchbase
+    machine_id: 1b699d79ccfe4883994960bde6389623
+    volumes:
+      - /couchbase:/opt/couchbase/var
