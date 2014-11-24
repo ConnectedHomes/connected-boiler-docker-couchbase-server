@@ -5,7 +5,7 @@ set -e
 rm -rf /backups/* /backups-dd
 
 timestamp=$(date +"%Y%m%d.%H%M.%S")
-host=http://${COUCHBASE_PORT_8091_TCP_ADDR}:8091
+host=http://$(curl -sS http://169.254.169.254/latest/meta-data/public-hostname):8091
 
 echo "backing up couchbase cluster"
 /opt/couchbase/bin/cbbackup -u Administrator -p password $host /backups > /dev/null 2>&1

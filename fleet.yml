@@ -50,11 +50,9 @@ dev:
 prod:
   couchbase.1:
     <<: *couchbase
-    ebs:
-      vol_id: vol-209ac027 # eu-west-1c
-      mount: /opt/couchbase/var
-      device: /dev/xvdg
-      machine_id: e0cab294db194c2a8958900143410046
+    machine_id: e0cab294db194c2a8958900143410046
+    volumes:
+      - /couchbase:/opt/couchbase/var
   couchbase.2:
     <<: *couchbase
     ebs:
@@ -84,3 +82,12 @@ prod:
     machine_id: 1b699d79ccfe4883994960bde6389623
     volumes:
       - /couchbase:/opt/couchbase/var
+  couchbase-backup:
+      timer: "weekly"
+      oneshot: true
+      ebs:
+        vol_id: vol-574c425c
+        zone: eu-west-1a
+        machine_id: 0c9d1fc6fd1d452eb5b32ac1b6427c8f 
+        mount: /backups
+        device: /dev/xvdm
