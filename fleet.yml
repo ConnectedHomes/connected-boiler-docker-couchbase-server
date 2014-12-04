@@ -36,16 +36,6 @@ dev:
     <<: *couchbase
   couchbase-cluster-init:
     <<: *couchbase-cluster-init
-  couchbase-backup:
-      docker_links:
-        - couchbase
-      timer: "23:00:00"
-      oneshot: true
-      ebs:
-        vol_id: vol-5c356f5b
-        zone: eu-west-1c
-        mount: /backups
-        device: /dev/xvdm
 
 prod:
   couchbase.1:
