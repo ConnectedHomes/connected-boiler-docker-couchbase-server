@@ -30,7 +30,7 @@ RUN echo 'root:couchbase' | chpasswd
 # Add Universe (for libssl0.9.8 dependency), update & install packages
 RUN sed -i.bak 's/main$/main universe/' /etc/apt/sources.list
 RUN apt-get -y update
-RUN apt-get -y install librtmp0 libssl0.9.8 lsb-release wget python python-pip
+RUN apt-get -y install librtmp0 libssl0.9.8 lsb-release wget python python-pip curl
 RUN pip install awscli
 
 # Download Couchbase Server package to /tmp & install
