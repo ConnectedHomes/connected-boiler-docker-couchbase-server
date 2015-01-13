@@ -40,23 +40,19 @@ dev:
 prod:
   couchbase.1:
     <<: *couchbase
-    machine_id: e0cab294db194c2a8958900143410046
+    machine_id: b08bf60115d74228a543ed9aaa7be0c9
     volumes:
       - /couchbase:/opt/couchbase/var
   couchbase.2:
     <<: *couchbase
-    ebs:
-      vol_id: vol-8a98c28d # eu-west-1c
-      mount: /opt/couchbase/var
-      device: /dev/xvdg
-      machine_id: 6a5ebc4ba97343a687219b6d94b91ce0 
+    machine_id: 6a5ebc4ba97343a687219b6d94b91ce0 
+    volumes:
+      - /couchbase:/opt/couchbase/var
   couchbase.3:
     <<: *couchbase
-    ebs:
-      vol_id: vol-fcd6eef7 # eu-west-1a
-      mount: /opt/couchbase/var
-      device: /dev/xvdg
-      machine_id: 0c9d1fc6fd1d452eb5b32ac1b6427c8f
+    machine_id: 0c9d1fc6fd1d452eb5b32ac1b6427c8f
+    volumes:
+      - /couchbase:/opt/couchbase/var
   couchbase.4:
     <<: *couchbase
     machine_id: d8f16fa9692f4090bc3812e24ad389fa
@@ -70,6 +66,31 @@ prod:
   couchbase.6:
     <<: *couchbase
     machine_id: 1b699d79ccfe4883994960bde6389623
+    volumes:
+      - /couchbase:/opt/couchbase/var
+  couchbase.7:
+    <<: *couchbase
+    machine_id: eb0d761134df48c2940c1a396cbf808d
+    volumes:
+      - /couchbase:/opt/couchbase/var
+  couchbase.8:
+    <<: *couchbase
+    machine_id: 499f86b94aa046c3a768751878e39b69
+    volumes:
+      - /couchbase:/opt/couchbase/var
+  couchbase.9:
+    <<: *couchbase
+    machine_id: f5a3e11ca9834a15b48c0b9025752420
+    volumes:
+      - /couchbase:/opt/couchbase/var
+  couchbase.10:
+    <<: *couchbase
+    machine_id: e6818ab56eba4524af3d587e60653397
+    volumes:
+      - /couchbase:/opt/couchbase/var
+  couchbase.11:
+    <<: *couchbase
+    machine_id: 5d75881cf6d74febb50c7420b50d4c97
     volumes:
       - /couchbase:/opt/couchbase/var
   couchbase-backup:
