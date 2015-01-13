@@ -2,7 +2,6 @@
 default:
   couchbase: &couchbase
     image: couchbase-server-new
-    ec2_public_hostname: true
     announce:
       couchbase: 8091
     env_vars:
@@ -33,9 +32,37 @@ default:
 
 dev:
   couchbase:
-    <<: *couchbase
+    image: couchbase-server-new
+    global_unit: true
+    volumes:
+      - /couchbase:/opt/couchbase/var
+    announce:
+      couchbase: 8091
+    env_vars:
+      SET_EC2_HOSTNAME: true
+    role: db
+    stop_timeout: 60
+    expose:
+      - 4369:4369
+      - 8091:8091
+      - 8092:8092
+      - 11209:11209
+      - 11210:11210
+      - 11211:11211
+      - from: 21100
+        to: 21199
+
   couchbase-cluster-init:
-    <<: *couchbase-cluster-init
+    global_unit: true
+    role: db
+    restart_on_failure: true
+    wrap_in_shell: true # need this to enable $ETCDCTL_PEERS to be interpolated
+    env_vars:
+      CB_INIT_RAM_SIZE: 512
+      CB_INIT_BUCKET_REPLICA_COUNT: 1 
+      ETCDCTL_PEERS: $ETCDCTL_PEERS
+    docker_links:
+      - couchbase
 
 prod:
   couchbase.1:
