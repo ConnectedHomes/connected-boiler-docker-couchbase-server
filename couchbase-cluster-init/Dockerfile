@@ -28,8 +28,8 @@ ENV DEBIAN_FRONTEND noninteractive
 # Add Universe (for libssl0.9.8 dependency), update & install packages
 RUN sed -i.bak 's/main$/main universe/' /etc/apt/sources.list
 
-RUN apt-get -y update
-RUN apt-get -y install curl wget librtmp0 libssl0.9.8 lsb-release python
+RUN apt-get -y update && \
+  apt-get -y install curl wget librtmp0 libssl0.9.8 lsb-release python jq
 
 # Download Couchbase Server package to /tmp & install
 RUN wget $CB_DOWNLOAD_URL -O $CB_LOCAL_PATH

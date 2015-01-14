@@ -5,6 +5,7 @@ set -o nounset
 # error on clobber
 set -o noclobber
 
+CB_INIT_CLUSTER_SIZE=${INIT_CLUSTER_SIZE} # no default
 CB_INIT_BUCKET_NAME=${CB_INIT_BUCKET_NAME:-"bgch-cb-api"}
 CB_INIT_DATA_PATH=${CB_INIT_DATA_PATH:-"/opt/couchbase/var/lib/couchbase/data"}
 CB_INIT_INDEX_PATH=${CB_INIT_INDEX_PATH:-"/opt/couchbase/var/lib/couchbase/data"}
@@ -76,7 +77,7 @@ createOrJoinCluster() {
 joinCluster() {
   EXISTING_MEMBER=$(etcdctl get /couchbase-cluster/leader)
 
-  CMD="/opt/couchbase/bin/couchbase-cli rebalance -c ${EXISTING_MEMBER} \
+  CMD="/opt/couchbase/bin/couchbase-cli server-add -c ${EXISTING_MEMBER} \
     --server-add ${CB_SERVER_ENDPOINT} \
     --server-add-username=$CB_INIT_USERNAME \
     --server-add-password=$CB_INIT_PASSWORD \
@@ -85,7 +86,36 @@ joinCluster() {
   echo running "$CMD"
   eval $CMD
   RET_CODE=$?
-  [[ $RET_CODE = 0 ]] && joinedCluster
+  [[ $RET_CODE = 0 ]] && getClusterSize
+
+  echo "Bad exit code: $RET_CODE" >&2
+  exit $RET_CODE 
+}
+
+getClusterSize() {
+  CMD="/opt/couchbase/bin/couchbase-cli server-list -c ${CB_SERVER_ENDPOINT} \
+    --user $CB_INIT_USERNAME \
+    --password $CB_INIT_PASSWORD \
+    -o json \
+    | jq '.nodes | length'"
+  echo running "$CMD"
+  SIZE=$(eval $CMD)
+  RET_CODE=$?
+  [[ $RET_CODE = 0 ]] && [[ $SIZE = $INIT_CLUSTER_SIZE ]] && rebalanceCluster
+  [[ $RET_CODE = 0 ]] && skippingRebalance
+
+  echo "Bad exit code: $RET_CODE" >&2
+  exit $RET_CODE 
+}
+
+rebalanceCluster() {
+  CMD="/opt/couchbase/bin/couchbase-cli rebalance -c ${CB_SERVER_ENDPOINT} \
+    --user $CB_INIT_USERNAME \
+    --password $CB_INIT_PASSWORD"
+  echo running "$CMD"
+  eval $CMD
+  RET_CODE=$?
+  [[ $RET_CODE = 0 ]] && rebalancedCluster
 
   echo "Bad exit code: $RET_CODE" >&2
   exit $RET_CODE 
@@ -144,6 +174,16 @@ alreadyCluster() {
 
 joinedCluster() {
   echo "Joined cluster"
+  exit 0
+}
+
+skippingRebalance() {
+  echo "Not all nodes have joined cluster yet; skipping rebalance"
+  exit 0
+}
+
+rebalancedCluster() {
+  echo "Rebalanced cluster"
   exit 0
 }
 
