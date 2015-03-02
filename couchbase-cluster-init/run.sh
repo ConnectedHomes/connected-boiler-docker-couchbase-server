@@ -23,6 +23,7 @@ echo "Setting etcd peers to $ETCDCTL_PEERS"
 CB_SERVER_HOST=${CB_SERVER_HOST:-"$COUCHBASE_PORT_8091_TCP_ADDR"}
 CB_SERVER_PORT=${CB_SERVER_PORT:-"$COUCHBASE_PORT_8091_TCP_PORT"}
 CB_SERVER_ENDPOINT=${CB_SERVER_HOST}:${CB_SERVER_PORT}
+ETCD_LEADER_KEY=${ETCD_LEADER_KEY:-/couchbase-cluster/leader}
 
 waitForNodeToStart() {
   CMD="wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 ${CB_SERVER_ENDPOINT} -o /dev/null"
@@ -61,7 +62,7 @@ chkCluster() {
 }
 
 createOrJoinCluster() {
-  CMD="etcdctl mk /couchbase-cluster/leader ${CB_SERVER_ENDPOINT}"
+  CMD="etcdctl mk ${ETCD_LEADER_KEY} ${CB_SERVER_ENDPOINT}"
   echo running "$CMD"
   eval $CMD
   RET_CODE=$?
@@ -75,7 +76,7 @@ createOrJoinCluster() {
 }
 
 joinCluster() {
-  EXISTING_MEMBER=$(etcdctl get /couchbase-cluster/leader)
+  EXISTING_MEMBER=$(etcdctl get ${ETCD_LEADER_KEY})
 
   CMD="/opt/couchbase/bin/couchbase-cli server-add -c ${EXISTING_MEMBER} \
     --server-add ${CB_SERVER_ENDPOINT} \
